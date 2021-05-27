@@ -17,7 +17,7 @@ cpuJSON = """{
     "m_voltage": 1.25,
     "coreClockMultiplier": 0.00526,
     "MemChannelsMultiplier": 0.985661,
-    "MemClockMultiplier": 1.00483,
+    "MemClockMultiplier": 0.00483,
     "FinalAdjustment": -4.78467
 }"""
 pciSlotsJSON = [
@@ -42,8 +42,8 @@ cpuCoolerJSON = """{
 ramJSON = """{
     "m_voltage": 1.5,
     "m_maxVoltage": 1.67,
-    "m_baseFreq": 1600,
-    "channelsUsed": 2
+    "m_baseFreq": 2600,
+    "channelsUsed": 1
 }"""
 
 result = json.loads(resultJSON)
@@ -362,3 +362,6 @@ elif inputt == "gpuLoadTemp":
     print(getGPULoadTemp(0, 0))
 elif inputt == "getMaxFreq":
     print(getMaxFrequency())
+
+print("Enter any key to exit")
+input()
