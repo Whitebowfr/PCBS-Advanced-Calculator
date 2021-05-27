@@ -159,6 +159,12 @@ class VirtualComputer {
                 }
             }
             return { freq: a, v: this.voltageRequirement(sl, a), temp: this.loadTemp(sl).ma }
+        },
+
+        getFps: function() {
+            console.log(this.sys.ram[0])
+            let a = this.sys.cpu.coreClockMultiplier * this.sys.cpu.currentFreq + this.sys.cpu.memChannelsMultiplier * this.sys.ram[0].channelUsed + this.sys.cpu.memClockMultiplier * this.sys.ram[0].currentFreq + this.sys.cpu.finalAdjustment
+            return Math.max(a, 0)
         }
     }
 

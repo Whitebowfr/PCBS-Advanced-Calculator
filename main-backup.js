@@ -577,7 +577,11 @@ computer.setCpu({
     frequency: 3200,
     currentFreq: 3200,
     voltage: 1.25,
-    maxVoltage: 2
+    maxVoltage: 2,
+    coreClockMultiplier: 0.00123,
+    memChannelsMultiplier: 0.0135,
+    memClockMultiplier: 0.0456,
+    finalAdjustment: -1.0308
 })
 computer.setGpu([{
     m_thermalLimit: 95,
@@ -604,6 +608,7 @@ computer.setRam([{
     voltage: 1.2,
     maxVoltage: 1.65,
     currentFreq: 2200,
+    channelUsed: 2,
 }])
 
-console.log(computer.Cpu.getCpuFps(1.05))
+console.log(computer.Cpu.getFps())
