@@ -81,7 +81,11 @@ computer.setCpu({
     frequency: 4000,
     currentFreq: 4000,
     voltage: 1.35,
-    maxVoltage: 1.55
+    maxVoltage: 1.55,
+    coreClockMultiplier: 0.00123,
+    memChannelsMultiplier: 0.0135,
+    memClockMultiplier: 0.0456,
+    finalAdjustment: -1.0308
 })
 ```
 frequency = base frequency !
@@ -133,6 +137,7 @@ computer.setRam([{
     voltage: 1.2,
     maxVoltage: 1.65,
     currentFreq: 2200,
+    usedChannels: 2
 }])
 ```
 again,  frequency = base frequency.
@@ -204,6 +209,7 @@ If a getSilicon() function returns a sl under 1 and a top of 100 or more, that m
 - `voltageRequirement([optional] sl, [optional] freq)` : returns a number which correspond to the voltage required to sustain a specific speed. If the freq is undefined, the speed taken will be the cpu.currentFreq. If the sl is undefined, it will do the best possible voltage (sl = 1.05) and the worst (sl = 1)
 - `getMaxVoltage([optional] sl)` : returns a number which correspond to the max voltage reachable by the chip (if sl is declared) before breaking. If sl is undefined, it will return the best and worst.
 - `getMaxFrequency([optional] sl)` : returns an object containing the absolute maximum frequency of the chip (obj.freq) , the voltage required to sustain this speed (obj.v), and the temps it will reach (obj.temps). If sl in not declared, it will take sl = 1.05 so the best possible chip. It takes into account if the CPU can support  this voltage, and if the CPU is not thermal throttling (it's very precise so you add 1 MHz to your GPU clock and it's over)
+- `getFps()` : returns the cpu fps result in 3DMark. For this you need the 4 multipliers in the Cpu object. During the test, the CPU won't reach this number because of the way the FPS increases over time, but on the end screen (the one with the results), it should be exact.
 
 ** Examples**
 ```javascript
@@ -240,6 +246,7 @@ computer.Cpu.getMaxFrequency(1.03) /*{
 																  v: 1.4573105892777996,
 																  temp: 94.95733459744405
 																}*/
+computer.Cpu.getFps() // 25.590991000000002
 ```
 
 ##### Storage
