@@ -162,9 +162,12 @@ class VirtualComputer {
         },
 
         getFps: function() {
-            console.log(this.sys.ram[0])
             let a = this.sys.cpu.coreClockMultiplier * this.sys.cpu.currentFreq + this.sys.cpu.memChannelsMultiplier * this.sys.ram[0].channelUsed + this.sys.cpu.memClockMultiplier * this.sys.ram[0].currentFreq + this.sys.cpu.finalAdjustment
             return Math.max(a, 0)
+        },
+
+        getScore: function() {
+            return Math.max(0, (298 * this.getFps()))
         }
     }
 
@@ -233,7 +236,6 @@ class VirtualComputer {
                     a += c
                 }
                 while (Math.round(this.getMaxVoltage(a) * 1000) / 1000 > v) {
-                    console.log(a, this.getMaxVoltage(a), v)
                     a -= c
                 }
                 c /= 10
@@ -298,7 +300,6 @@ class VirtualComputer {
             } else {
                 this.sys.setSl(sl)
                 num3 *= this.sys.GetGPUOverClockHeatFactor(this.sys.gpus[slot])
-                console.log(this.sys.GetGPUOverClockHeatFactor(this.sys.gpus[slot]))
                 return { ma: this.sys.GetHeatWithFeedback(num3, this.sys) + 0.5, mi: this.sys.GetHeatWithFeedback(num3, this.sys) - 0.5 }
             }
         },
@@ -346,7 +347,32 @@ class VirtualComputer {
                 }
             }
             return { sl: a, top: Math.round((1.05 - a) * 200000) / 100 }
-        }
+        },
+
+        Get3DMarkTestScore: function(test) {
+            var a = 0
+            var gpu = this.sys.gpus[0]
+            if (this.sys.gpus.length == 1) {
+                if (test == 1) {
+                    a = ((gpu.GT1SingleCoreClockMultiplier * gpu.m_OCcoreClockFreq) + (gpu.GT1SingleMemClockMultiplier * gpu.m_OCmemClockFreq) + (gpu.GT1SingleBenchmarkAdjustment))
+                } else {
+                    a = ((gpu.GT2SingleCoreClockMultiplier * gpu.m_OCcoreClockFreq) + (gpu.GT2SingleMemClockMultiplier * gpu.m_OCmemClockFreq) + (gpu.GT2SingleBenchmarkAdjustment))
+                }
+            } else {
+                if (test == 1) {
+                    a = ((gpu.GT1DualCoreClockMultiplier * gpu.m_OCcoreClockFreq) + (gpu.GT1DualMemClockMultiplier * gpu.m_OCmemClockFreq) + (gpu.GT1DualBenchmarkAdjustment))
+                } else {
+                    a = ((gpu.GT2DualCoreClockMultiplier * gpu.m_OCcoreClockFreq) + (gpu.GT2DualMemClockMultiplier * gpu.m_OCmemClockFreq) + (gpu.GT2DualBenchmarkAdjustment))
+                }
+            }
+            return a
+        },
+
+        getScore: function() {
+            let num = 1 / this.Get3DMarkTestScore(1)
+            let num2 = 1 / this.Get3DMarkTestScore(2)
+            return Math.max(0, (328 / (num + num2)))
+        },
     }
 
     Psu = {
@@ -420,6 +446,12 @@ class VirtualComputer {
         }
     }
 
+    Get3DMarkScore() {
+        return (1 / (0.85 / this.Cpu.getScore() + 0.15 / this.Gpus.getScore()))
+    }
+
+    Get3DMarkCPUScore() {}
+
     lerp(start, end, amt) {
         return (1 - amt) * start + amt * end
     }
@@ -487,7 +519,7 @@ class VirtualComputer {
             let num = this.GetAFPerComponent(sys.customWaterLoop);
             num2 = (num <= 0 ? 0 : this.GetCPUCoolingFactor(num))
         } else {
-            num2 = this.GetCPUCoolingFactor(sys.cpuCooler.airflow)
+            num2 = this.GetCPUCoolingFactor(sys.cpuCooler.airFlow)
         }
         return Math.max(this.GetIdleTemp(sys.cpu) * 0.5 / sys.cpu.dies, temp * (1 - num2));
     }
@@ -521,7 +553,7 @@ class VirtualComputer {
     }
 
     GetCPUIdleInternalTemp(sys) {
-        return this.GetCPUCooledTemp(GetIdleTemp(sys.cpu), sys)
+        return this.GetCPUCooledTemp(this.GetIdleTemp(sys.cpu), sys)
     }
 
     getCpuLoadTemp(silicon, sys) {
