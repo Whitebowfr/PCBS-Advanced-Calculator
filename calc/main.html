@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <script src="../main.js"></script>
+    <link rel="stylesheet" type="text/css" href="loading-bar.min.css" />
+    <script type="text/javascript" src="loading-bar.min.js"></script>
+</head>
+<style>
+    html {
+        height: 100%;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #171744, #002561);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin-left: 0px;
+    }
+    
+    .column {
+        display: inline-block;
+    }
+    
+    .column-left {
+        width: 15%;
+        background-color: white;
+        border-radius: 0 0 10px 0;
+        padding: 10px;
+        float: left;
+    }
+    
+    .column-right {
+        width: 84%;
+        float: right;
+    }
+    
+    ul.no-style {
+        list-style: none;
+    }
+    
+    .bold {
+        font-weight: 700;
+    }
+    
+    ul li {
+        cursor: pointer;
+    }
+    
+    ul li a {
+        text-decoration: none;
+        color: #333;
+    }
+    
+    li.separator {
+        width: 75%;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        border-bottom: 3px solid #333;
+    }
+    
+    li:not(.separator):hover+li.separator {
+        border-color: #005df3;
+        transition: ease-in-out 200ms;
+    }
+    
+    .centered {
+        margin-right: auto;
+        margin-left: auto;
+    }
+    
+    .main-table {
+        background-color: rgba(217, 232, 255, 0.36);
+        width: 85%;
+        border-radius: 10px;
+        border: 3px solid #03102c;
+        margin-top: 30px;
+        padding: 10px;
+    }
+    
+    select.systemSelects {
+        display: block;
+        line-height: 20px;
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+        width: 70%;
+        border-radius: 10px;
+    }
+    
+    .select2-selection {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    label.select {
+        display: block;
+        font-size: 1.6rem;
+        margin-bottom: 5px;
+        margin-left: 15px;
+    }
+    
+    select.caseFansSelects {
+        display: inline;
+        width: 50%;
+        border-radius: 10px 0 0 10px;
+        padding: 3px;
+    }
+    
+    input.caseFansQuantityInput {
+        display: inline-block;
+        font-size: 1.3rem;
+        margin-bottom: 5px;
+        margin-left: 25px;
+        width: 18%;
+        border-radius: 0 10px 10px 0;
+        border: none;
+        padding: 3px
+    }
+    
+    #caseFansAddMoreButton {
+        font-size: 1.5rem;
+        padding: 3px;
+        width: 10%;
+        border-radius: 10px;
+        background-color: #3898ec;
+        color: white;
+        border: none;
+        float: right;
+        margin-right: 100px;
+        cursor: pointer;
+        user-select: none;
+        outline: none;
+    }
+    
+    #caseFansAddMoreButton:active {
+        border-top: 1px solid #03102c
+    }
+    
+    .resultTable {
+        width: 100%;
+        text-align: center;
+        border-spacing: 1px;
+    }
+    
+    .resultTable tr td {
+        border: 1px solid black;
+    }
+    
+    table.resultTable>tbody>tr:first-child td {
+        background-color: rgba(54, 96, 160, 0.36);
+        font-size: larger;
+        font-weight: 700;
+        padding: 5px;
+    }
+    
+    table.resultTable tr:nth-child(even) {
+        background-color: rgba(142, 172, 218, 0.36);
+    }
+    
+    table.resultTable tr:nth-child(odd) {
+        background-color: rgba(155, 177, 211, 0.36);
+    }
+    
+    #resultTypeSelect {
+        display: block;
+        line-height: 20px;
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+        width: 10%;
+        border-radius: 10px;
+        user-select: none;
+        text-align: center;
+    }
+    
+    input.showConfigCheck {
+        float: right;
+        margin-right: 200px;
+        width: 1vw;
+        height: 1vw;
+    }
+    
+    input[type="number"].configInput {
+        display: block;
+        width: 30%;
+        border-radius: 10px;
+        margin-left: 100px;
+    }
+    
+    input[type="range"].config {
+        -webkit-appearance: none;
+        appearance: none;
+        padding: 0;
+        outline: none;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: inline-block;
+        opacity: 0.7;
+        width: 60%;
+        margin-left: 100px;
+        border-radius: 15px;
+        height: 15px;
+        transition: .2s;
+    }
+    
+    input[type="range"].config::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: 50%;
+        width: 25px;
+        background: rgba(54, 96, 160);
+        height: 25px;
+    }
+    
+    input[type="range"].config::-moz-range-thumb {
+        border-radius: 50%;
+        height: 25px;
+    }
+    
+    input[type="range"].config:hover {
+        opacity: 1;
+    }
+    
+    div.config {
+        display: none;
+    }
+    
+    div.config h4 {
+        margin-top: 10px;
+        margin-bottom: 2px;
+        margin-left: 100px;
+    }
+    
+    div.config p {
+        display: inline-block;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    
+    #loading {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        backdrop-filter: blur(5px);
+    }
+    
+    .ldBar path.baseline {
+        stroke-width: 3;
+    }
+    
+    #gpusSelect2 {
+        width: 1000px;
+    }
+</style>
+
+<body>
+    <div id="loading">
+        <div class="centered myBar" style="width: 50%; height: 50%;"></div>
+    </div>
+    <div id="mainButLikeReallyMain">
+        <div class="column column-left">
+            <h1 style="font-size: 2.8rem; margin: 2px" class="bold">PCBS Advanced Calculator</h1>
+            <ul class="no-style bold" style="font-size: 28px; color: #333">
+                <li>System configuration</li>
+                <li class="separator"></li>
+                <li>Custom parts</li>
+                <li class="separator"></li>
+                <li>Results</li>
+                <li style="margin-top: 32vh;"><a href="https://whitebowfr.github.io/PCBSGraph/">Graph</a></li>
+                <li class="separator"></li>
+                <li><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=2120941673">Calculator</a></li>
+                <li class="separator"></li>
+                <li><a href="https://raw.githubusercontent.com/Whitebowfr/PCBSGraph/gh-pages/helpers/data.json">Source data</a></li>
+                <li class="separator"></li>
+                <li><a href="https://store.steampowered.com/app/621060/PC_Building_Simulator/">Buy PCBS</a></li>
+                <li class="separator"></li>
+                <li>Credits</li>
+            </ul>
+        </div>
+        <div class="column column-right" id="systemConfig">
+            <div class="centered main-table">
+                <form>
+                    <label for="" style="float: right; margin-right: 145px;" class="select bold">Customisation</label>
+                    <label for="cpusSelect" class="select bold">CPU</label>
+                    <select name="" id="cpusSelect" class="systemSelects"></select>
+                    <input type="checkbox" name="" id="showCpuConfigCheck" class="showConfigCheck">
+                    <div class="config" id="cpuConfig">
+                        <input type="number" name="" placeholder="Enter custom frequency" class="caseFansQuantityInput configInput">
+                        <input type="number" name="" placeholder="Enter custom voltage" class="caseFansQuantityInput configInput">
+                    </div>
+                    <label for="cpuCoolerSelect" class="select bold">CPU Cooler</label>
+                    <select name="" id="cpuCoolerSelect" class="systemSelects"></select>
+                    <label for="gpusSelect1" class="select bold">GPU(s)</label>
+                    <select name="" id="gpusSelect1" class="systemSelects" oninput="updateGpus(this.value)"></select>
+                    <div style="display: none; width: 70%;">
+                        <select name="" id="gpusSelect2" class="systemSelects"></select>
+                    </div>
+                    <input type="checkbox" name="" id="gpu2ConfigCheck" class="showConfigCheck">
+                    <div class="config" id="gpuConfig">
+                        <h4>Power Draw</h4>
+                        <input type="range" name="" class="config" oninput="this.nextElementSibling.innerHTML = this.value + ' %'" value="100" min="80" max="120">
+                        <p>100 %</p>
+                        <h4>Core Clock</h4>
+                        <input type="range" name="" class="config" oninput="this.nextElementSibling.innerHTML = this.value + ' MHz'" value="1000" min="0" max="2000">
+                        <p>1000 MHz</p>
+                        <h4>Mem Clock</h4>
+                        <input type="range" name="" class="config" oninput="this.nextElementSibling.innerHTML = this.value + ' MHz'" value="1000" min="0" max="2000">
+                        <p>1000 MHz</p>
+                    </div>
+                    <label for="ramSelect" class="select bold">RAM</label>
+                    <select name="" id="ramSelect" class="systemSelects caseFansSelects"></select>
+                    <input type="number" name="" class="caseFansQuantityInput" id="ramChannels" placeholder="Number of sticks">
+                    <input type="checkbox" name="" id="showRamConfigCheck" class="showConfigCheck">
+                    <label for="caseSelect" class="select bold">Case</label>
+                    <select name="" id="caseSelect" class="systemSelects"></select>
+                    <label for="caseFansSelect1" class="select bold">Case Fans</label>
+                    <select name="" id="caseFansSelect1" class="systemSelects caseFansSelects"></select>
+                    <input type="number" name="caseFansNumber1" id="caseFansNumber1" placeholder="Quantity" class="caseFansQuantityInput">
+                    <input type="button" value="Add more" id="caseFansAddMoreButton" onclick="addMoreFans(this)">
+                </form>
+            </div>
+        </div>
+        <div class="column column-right" id="result">
+            <div class="centered main-table">
+                <select name="" id="resultTypeSelect" class="centered" onchange="console.log(this.value)">
+                    <option value="cpu" selected>CPU</option>
+                    <option value="gpu1">GPU#0</option>
+                    <option value="gpu2">GPU#1</option>
+                    <option value="ram">RAM</option>
+                    <option value="storage">Storage</option>
+                    <option value="psu">Wattage</option>
+                    <option value="sys">Entire system</option>
+                </select>
+                <table class="resultTable">
+                    <tr>
+                        <td>Component</td>
+                        <td>Worst</td>
+                        <td>Top 50%</td>
+                        <td>Top 25%</td>
+                        <td>Top 10%</td>
+                        <td>Top 1%</td>
+                    </tr>
+                    <tr>
+                        <td>CPU Idle Temp</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>CPU Load Temp</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>CPU Max Frequency</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>CPU Max Voltage</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>CPU Score</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>CPU FPS</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    for (sel in document.getElementsByTagName("select")) {
+        let curSel = document.getElementsByTagName("select")[sel]
+        if (curSel.innerHTML == "") {
+            curSel.innerHTML += `<option value="">Choose one...</option>`
+        }
+    }
+
+    function readTextFile(file, callback) { //stole this from stackoverflow, works like a charm
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function() {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+
+    var myData, computer
+
+    //Open the data file, and also fire the whole code (since it's asynchronous, we must wait for it to load)
+    let barProgress = 0
+    var bar = new ldBar(".myBar", {
+        "preset": "rainbow",
+        "value": barProgress
+    })
+    readTextFile("https://raw.githubusercontent.com/Whitebowfr/PCBSGraph/gh-pages/helpers/data.json", function(text) {
+        myData = JSON.parse(text);
+        launch()
+    });
+
+    function wait(ms) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve('done')
+            }, ms);
+        })
+    }
+
+
+    async function launch() {
+        barProgress += 20
+        bar.set(barProgress, true)
+        await wait(5)
+        for (category in myData) {
+            barProgress += 10
+            bar.set(barProgress, true)
+            await wait(5)
+            if (category == "mobos" || category == "storage") continue
+            else
+                for (part in myData[category]) {
+                    if (category != "coolers") {
+                        var name = myData[category][part].fullName
+                        if (category == "gpus") {
+                            document.getElementById("gpusSelect1").innerHTML += `<option value="${name}">${name}</option>`
+                        } else {
+                            document.getElementById(category + "Select").innerHTML += `<option value="${name}">${name}</option>`
+                        }
+                    } else {
+                        var name = myData[category][part].fullName
+                        switch (myData[category][part].type) {
+                            case "Air Cooler":
+                                var name = myData[category][part].fullName
+                                document.getElementById("cpuCoolerSelect").innerHTML += `<option value="${name}">${name}</option>`
+                                break
+                            case "Case Fan":
+                                var name = myData[category][part].fullName
+                                document.getElementById("caseFansSelect1").innerHTML += `<option value="${name}">${name}</option>`
+                                break
+                        }
+                    }
+                }
+        }
+        document.getElementById("gpusSelect2").innerHTML = document.getElementById("gpusSelect1").innerHTML
+        barProgress += 20
+        bar.set(barProgress, true)
+        await wait(10)
+        document.getElementById("loading").style.display = "none"
+        $("#gpusSelect2").select2()
+        $("#gpusSelect1").select2()
+        $("#ramSelect").select2()
+        $("#cpusSelect").select2()
+        $("#cpuCoolerSelect").select2()
+        $("#caseFansSelect1").select2()
+        $(".systemSelects").change(calculate)
+        $(".showConfigCheck").click(showConfig)
+    }
+
+    function updateGpus(gpuName) {
+        let gpu = myData.gpus[gpuName]
+        let config = document.getElementById("gpuConfig")
+        config.children[4].value = config.children[5].innerHTML = gpu.baseCoreClock
+        config.children[4].max = gpu.maxCoreClock * 1.5
+        config.children[7].value = config.children[8].innerHTML = gpu.baseMemClock
+        config.children[7].max = gpu.maxMemClock * 1.5
+        config.previousElementSibling.previousElementSibling.style.display = "inline-block"
+    }
+
+
+    function addMoreFans(btn) {
+        let nmbr = document.getElementsByClassName("caseFansQuantityInput").length
+        if (nmbr > 2) return false
+        let sel = document.createElement("select")
+        let inp = document.createElement("input")
+        inp.type = "number"
+        inp.name = "caseFansNumber" + nmbr
+        inp.id = inp.name
+        inp.placeholder = "Quantity"
+        inp.className = "caseFansQuantityInput"
+        sel.id = "caseFansSelect" + nmbr
+        sel.className = "systemSelects caseFansSelects"
+        btn.parentNode.insertBefore(sel, btn)
+        btn.parentNode.insertBefore(inp, btn)
+        console.log(nmbr)
+        document.getElementById("caseFansSelect" + nmbr).innerHTML = document.getElementById("caseFansSelect" + (nmbr - 1)).innerHTML
+        $(`#caseFansSelect${document.getElementsByClassName("caseFansQuantityInput").length - 1}`).select2()
+        $(`#caseFansSelect${document.getElementsByClassName("caseFansQuantityInput").length - 1}`).change(calculate)
+    }
+
+    function calculate(target) {
+        let system = document.getElementsByClassName("systemSelects")
+        computer = new VirtualComputer("first")
+        for (let i = 0; i < system.length; i++) {
+            if (system[i].value == "") continue
+            else switch (system[i].id) {
+                case "cpusSelect":
+                    var cpu = myData.cpus[system[i].value]
+                    cpu = getCpuCustomConfig(cpu)
+                    computer.setCpu(cpu)
+                    break;
+                case "gpusSelect1":
+                    var gpu1 = myData.gpus[system[i].value]
+                    gpu1 = getGpuCustomConfig(gpu1)
+                    break;
+                case "gpusSelect2":
+                    var gpu2 = myData.gpus[system[i].value]
+                    gpu2 = getGpuCustomConfig(gpu2)
+                    break;
+                case "cpuCoolerSelect":
+                    var cpuCooler = myData.coolers[system[i].value]
+                    computer.setCpuCooler(cpuCooler)
+                    break;
+                case "ramSelect":
+                    var ram = myData.ram[system[i].value]
+                    break;
+                case "caseSelect":
+                    break;
+            }
+        }
+        if (gpu1 == undefined && gpu2 != undefined) {
+            gpu1 = gpu2;
+            gpu2 = undefined
+        }
+        if (gpu1 != undefined) {
+            computer.setGpus([gpu1, gpu2])
+        }
+    }
+
+    function getCpuCustomConfig(c) {
+        var checkbox = document.getElementById("showCpuConfigCheck")
+        if (!checkbox.checked) {
+            c.currentFreq = c.frequency
+            return c
+        } else {
+            c.currentFreq = (checkbox.nextElementSibling.children[0].value == "" ? c.frequency : Number(checkbox.nextElementSibling.children[0].value))
+            c.voltage = (checkbox.nextElementSibling.children[1].value == "" ? c.voltage : Number(checkbox.nextElementSibling.children[1].value))
+            console.log(c)
+            return c
+        }
+    }
+
+    function getGpuCustomConfig(g) {
+        let checkbox = document.getElementById("gpu2ConfigCheck")
+        g.m_thermalLimit = g.thermalThrottling
+        g.wattage = g.watts
+        g.m_coreClockFreq = g.baseCoreClock
+        g.m_memClockFreq = g.baseMemClock
+        g.m_maxCoreClockFreq = g.maxCoreClock
+        g.m_maxMemClockFreq = g.maxMemClock
+        if (!chekcbox.checked) {
+            g.m_OCcoreClockFreq = g.baseCoreClock
+            g.m_OCmemClockFreq = g.baseMemClock
+            g.percentPowerIncrease = 100
+        } else {
+            g.m_OCcoreClockFreq = parseInt(checkbox.nextElementSibling.children[1].value)
+            g.OCmemClockFreq = parseInt(checkbox.nextElementSibling.children[2].value)
+            g.percentPowerIncrease = 100 - parseInt(checkbox.nextElementSibling.children[2].value)
+            return g
+        }
+    }
+
+    function showConfig(el) {
+        el.target.nextElementSibling.style.display = (el.target.checked ? "block" : "none")
+    }
+</script>
+
+</html>
