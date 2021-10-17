@@ -1,0 +1,152 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts</title>
+</head>
+
+<body>
+    <input type="button" onclick="generateGraph()" value="generate a graph">
+    <br>
+    <label for="">volatility (how much it can change) :</label>
+    <input type="number" name="" id="volatility" value="0.3">
+    <label for="">Lower limit</label>
+    <input type="number" name="" id="lowerLimit" value="7">
+    <br>
+    <label for="">Force given to the bounce back when the price reach the lower limit :</label>
+    <input type="number" name="" id="lowerLimitBounceUp" value="1.2">
+    <label for="">Upper limit</label>
+    <input type="number" name="" id="upperLimit" value="45">
+    <label for="">Force given when it reaches the upper limit</label>
+    <input type="number" name="" id="upperLimitBounceBack" value="5">
+    <label for="">Starting value</label>
+    <input type="number" name="" id="startingValue" value="10">
+    <br>
+    <label for="">The price will start to be lowered when it reaches the Upper Limit minus :</label>
+    <input type="number" name="" id="upperLimitationStart" value="10">
+    <div class="chart">
+        <canvas id="myChart" width="400" height="200"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+</body>
+<script>
+    var volatility = 0.3
+    var lowerLimit = 4
+    var lowerLimitBounceUp = 1.1
+    var upperLimit = 40
+    var upperLimitBounceBack = 10
+    var startingValue = 15
+    var upperLimitationStart = 10
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line', // also try bar or other graph types
+
+        // The data for our dataset
+        data: {
+            labels: [],
+            // Information about the dataset
+            datasets: [{
+                label: "price",
+                borderColor: 'royalblue',
+                data: [],
+            }]
+        },
+
+        // Configuration options
+        options: {
+            animation: false,
+            layout: {
+                padding: 10,
+            },
+            legend: {
+                position: 'bottom',
+            },
+            title: {
+                display: true,
+                text: 'Price in $'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: 1,
+                        max: upperLimit
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Price of crypto per day'
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Day'
+                    }
+                }]
+            }
+        }
+    });
+	
+	let avgTotal = []
+
+    function generateGraph() {
+        volatility = Number(document.getElementById("volatility").value)
+        lowerLimit = Number(document.getElementById("lowerLimit").value)
+        lowerLimitBounceUp = Number(document.getElementById("lowerLimitBounceUp").value)
+        upperLimit = Number(document.getElementById("upperLimit").value)
+        upperLimitBounceBack = Number(document.getElementById("upperLimitBounceBack").value)
+        startingValue = Number(document.getElementById("startingValue").value)
+        upperLimitationStart = Number(document.getElementById("upperLimitationStart").value)
+        var labels = []
+        var datad = []
+        var previousPrice = startingValue;
+        for (var i = 0; i < 200; i++) {
+            labels.push(i)
+            let e = generatePrice(previousPrice)
+            datad.push(e)
+            previousPrice = e
+        }
+		const sum = datad.reduce((a, b) => a + b, 0);
+		const avg = (sum / datad.length) || 0;
+		avgTotal.push(avg)
+		const sumTotal = avgTotal.reduce((a, b) => a + b, 0);
+		const avgTotale = (sumTotal / avgTotal.length) || 0;
+		console.log(avgTotale)
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data = datad;
+        });
+        chart.data.labels = labels
+        chart.update()
+    }
+
+    function generatePrice(oldPrice) {
+        var rnd = Math.random()
+        var changePercent = 2 * volatility * rnd
+        if (changePercent > volatility) {
+            changePercent -= 2 * volatility
+        }
+        var changeAmount = oldPrice * changePercent
+        var cryptoPrice = oldPrice + changeAmount
+        if (cryptoPrice < 0) {
+            cryptoPrice = Math.random() * 5
+        }
+        if (Math.abs(upperLimit - cryptoPrice) < upperLimitationStart) {
+            cryptoPrice -= Math.pow(1.2, Math.abs(upperLimitationStart - (upperLimit - cryptoPrice)))
+        }
+        while (cryptoPrice > upperLimit) {
+            cryptoPrice -= ((Math.random() + 1) * upperLimitBounceBack)
+        }
+        if (cryptoPrice < lowerLimit) {
+            cryptoPrice += (Math.random() + 1) * lowerLimitBounceUp
+        }
+        return cryptoPrice
+    }
+
+    generateGraph()
+</script>
+
+</html>
